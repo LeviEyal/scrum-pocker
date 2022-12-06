@@ -35,7 +35,7 @@ export default () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center h-full min-h-screen bg-purple-400">
-			<h1 className="text-4xl font-bold">Scrum Poker</h1>
+			<h1 className="text-4xl font-bold">Scrum Poker - SeeTrue SW Iteration Planning</h1>
 			<div className="flex items-center justify-center">
 				<button className="p-2 border rounded" onClick={handleReset}>
 					Reset Votes
