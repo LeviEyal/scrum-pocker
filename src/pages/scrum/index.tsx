@@ -30,7 +30,8 @@ export default function Main() {
 		handleUnreveal,
 		isRevealed,
 		usersData,
-		users,
+    users,
+    currentUserVote
 	} = useScrumFlow();
 
 	useEffect(() => {
@@ -40,22 +41,22 @@ export default function Main() {
 	}, [username]);
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full min-h-screen bg-purple-400">
+		<div className="flex flex-col items-center justify-center h-full min-h-screen bg-purple-200">
 			<h1 className="text-4xl font-bold">
 				Scrum Poker - SeeTrue SW Iteration Planning
 			</h1>
-			<div className="flex items-center justify-center">
-				<button className="p-2 border rounded" onClick={handleReset}>
+			<div className="flex items-center justify-center mt-5">
+				<button className="p-2 border rounded text-white bg-purple-800 hover:bg-purple-500" onClick={handleReset}>
 					Reset Votes
 				</button>
 				<button
-					className="p-2 border rounded"
+					className="p-2 border rounded text-white bg-purple-800 hover:bg-purple-500"
 					onClick={isRevealed ? handleUnreveal : handleReveal}
 				>
 					{isRevealed ? "Unreveal" : "Reveal"}
 				</button>
 			</div>
-			<div className="grid grid-cols-[1fr_3fr] gap-10 w-full h-full p-12">
+			<div className="grid grid-cols-[1fr_3fr] gap-10 w-full h-full py-5 px-12">
 				<section className="grow row-span-1 bg-white text-black rounded-lg p-5 shadow-xl">
 					<UsersList
 						users={users}
@@ -64,12 +65,12 @@ export default function Main() {
 					/>
 				</section>
 
-				<section className="row-span-2 bg-white text-black rounded-lg p-5 shadow-xl">
-					<table>
+				<section className="row-span-2 bg-white text-black text-left rounded-lg p-5 shadow-xl">
+					<table className="w-full">
 						<thead>
 							<tr>
 								{HEADERS.map((header) => (
-									<th key={header} className="px-4 py-2">
+									<th key={header} className="py-2 px-4 text-xl">
 										{header}
 									</th>
 								))}
@@ -83,13 +84,24 @@ export default function Main() {
 											{cell}
 										</td>
 									))}
-									<td className="border border-white px-4 py-2">
+                  <td className="border border-white px-4 py-2">
+                    {
+                      currentUserVote === row[row.length - 1] ? (
+                        <button
+                          className="p-2 border rounded text-white bg-purple-800 hover:bg-purple-500"
+                          onClick={() => handleVote("")}
+                        >
+                          Unvote
+                        </button>
+                      ) : (
 										<button
-											className="bg-white text-purple-400 px-4 py-2 rounded"
+											className="bg-white text-purple-400 px-4 py-2 rounded border border-purple-400 hover:bg-purple-400 hover:text-white"
 											onClick={() => handleVote(row[row.length - 1])}
 										>
 											Vote
-										</button>
+                        </button>
+                      )
+                    }
 									</td>
 								</tr>
 							))}

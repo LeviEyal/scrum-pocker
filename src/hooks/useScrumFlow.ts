@@ -10,6 +10,8 @@ export default function useScrumFlow() {
 
 	const users: string[] = Object.keys(usersData);
 
+	const currentUserVote = usersData[username]?.vote;
+
 	useEffect(() => {
 		if (socket) {
 			socket.on("userRevealed", (data) => {
@@ -59,5 +61,6 @@ export default function useScrumFlow() {
 		handleUnreveal,
 		handleReset,
 		users,
+		currentUserVote
 	};
 }
