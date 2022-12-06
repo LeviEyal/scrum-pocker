@@ -27,6 +27,7 @@ export interface UsersDataEvent {
 	[username: string]: {
 		username: string;
 		vote: string;
+		id: string;
 	};
 }
 
@@ -39,6 +40,7 @@ export interface ClientToServerEvents {
 	userUnrevealed: (data: UserRevealEvent) => void;
 	userReset: (data: UserResetEvent) => void;
 	usersData: (data: UsersDataEvent) => void;
+	update: (data: UserConnectedEvent) => void;
 }
 
 export interface ServerToClientEvents {
@@ -50,4 +52,5 @@ export interface ServerToClientEvents {
 	userUnrevealed: (data: UserRevealEvent) => void;
 	userReset: (data: UserResetEvent) => void;
 	usersData: (data: UsersDataEvent) => void;
+	update: (data: UserConnectedEvent) => void;
 }

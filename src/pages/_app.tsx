@@ -23,8 +23,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>NextJS TailwindCSS TypeScript Starter</title>
+				<title>Scrum Poker - SeeTrue SW Iteration Planning</title>
 				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+				<style> @import url('https://fonts.googleapis.com/css2?family=Jost&family=Montserrat+Alternates:wght@400;600&family=Poppins:wght@200;600;700&family=Quicksand&display=swap'); </style>
 			</Head>
 			<Component {...pageProps} />
 		</>

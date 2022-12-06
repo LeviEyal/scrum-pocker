@@ -6,6 +6,7 @@ import { ClientToServerEvents, ServerToClientEvents } from '../interfaces/interf
 interface IUserStore {
   username: string;
   login: (username: string) => void;
+  logout: () => void;
 }
 
 interface ISocketStore {
@@ -16,6 +17,7 @@ interface ISocketStore {
 const useUserStore = create(persist<IUserStore>((set, get) => ({
   username: '',
   login: (username: string) => set({ username }),
+  logout: () => set({ username: '' }),
 })));
 
 const useSocketStore = create<ISocketStore>((set, get) => ({
@@ -24,13 +26,11 @@ const useSocketStore = create<ISocketStore>((set, get) => ({
 }));
 
 export const useStore = () => {
-  const { username, login } = useUserStore();
-  const { socket, setSocket } = useSocketStore();
+  const userStore = useUserStore();
+  const socketStore = useSocketStore();
 
   return {
-    username,
-    login,
-    socket,
-    setSocket,
+    ...userStore,
+    ...socketStore,
   };
 };

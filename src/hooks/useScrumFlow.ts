@@ -14,6 +14,7 @@ export default function useScrumFlow() {
 
 	useEffect(() => {
 		if (socket) {
+			socket.emit("update", { username });
 			socket.on("userRevealed", (data) => {
 				setIsRevealed(true);
 			});
@@ -31,6 +32,7 @@ export default function useScrumFlow() {
 				socket.off("userRevealed");
 				socket.off("userUnrevealed");
 				socket.off("usersData");
+				socket.off("update");
 			}
 		};
 	}, [socket, username]);

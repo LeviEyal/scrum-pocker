@@ -4,3 +4,10 @@
 /* Your own custom component styles */
 
 @import 'tailwindcss/utilities';
+
+:root {
+  font-family: 'Jost', sans-serif;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-family: 'Quicksand', sans-serif;
+}
