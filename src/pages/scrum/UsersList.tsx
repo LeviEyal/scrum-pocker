@@ -6,7 +6,7 @@ interface Props {
 	isRevealed: boolean;
 }
 
-export const UsersList = ({ users, usersData, isRevealed }: Props) => {
+export default function UsersList({ users, usersData, isRevealed }: Props){
 	return (
 		<div className="">
 			<h1 className="text-4xl font-bold divide-x-2 divide-solid divide-black">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ClientToServerEvents, UsersDataEvent } from "../../interfaces/interfaces";
 import { useStore } from "../../store/store";
 
-export const useScrumFlow = () => {
+export default function useScrumFlow(){
 	const { socket, username } = useStore();
 	const [vote, setVote] = useState("");
 	const [isRevealed, setIsRevealed] = useState(false);

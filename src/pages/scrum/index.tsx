@@ -1,8 +1,8 @@
 import Router from "next/router";
 import { useEffect } from "react";
 import { useStore } from "../../store/store";
-import { UsersList } from "./UsersList";
-import { useScrumFlow } from "./useScrumFlow";
+import UsersList from "./UsersList";
+import useScrumFlow from "./useScrumFlow";
 
 const HEADERS = ["How much known for the task", "Dependencies", "Work effort", "Story points", ""];
 const ROWS = [
@@ -14,7 +14,7 @@ const ROWS = [
   ["Nothing", "Too many", "More than a week", "13"],
 ];
 
-export default () => {
+export default function Main(){
 	const { socket, login, username } = useStore();
 	const {
 		handleVote,
