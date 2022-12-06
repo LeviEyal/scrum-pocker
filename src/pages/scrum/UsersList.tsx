@@ -20,7 +20,7 @@ export default function UsersList({ users, usersData, isRevealed }: Props){
 					</tr>
 				</thead>
 				<tbody>
-					{users.map((user) => (
+					{users?.map((user) => (
 						<tr key={user}>
 							<td className="border border-white px-4 py-2">{user}</td>
 							<td className="border border-white px-4 py-2">

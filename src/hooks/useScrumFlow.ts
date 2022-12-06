@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { ClientToServerEvents, UsersDataEvent } from "../../interfaces/interfaces";
-import { useStore } from "../../store/store";
+import { ClientToServerEvents, UsersDataEvent } from "../interfaces/interfaces";
+import { useStore } from "../store/store";
 
-export default function useScrumFlow(){
+export default function useScrumFlow() {
 	const { socket, username } = useStore();
 	const [vote, setVote] = useState("");
 	const [isRevealed, setIsRevealed] = useState(false);
-  const [usersData, setUsersData] = useState<UsersDataEvent>({});
+	const [usersData, setUsersData] = useState<UsersDataEvent>({});
 
-  const users: string[] = Object.keys(usersData);
+	const users: string[] = Object.keys(usersData);
 
 	useEffect(() => {
 		if (socket) {
@@ -18,24 +18,24 @@ export default function useScrumFlow(){
 			socket.on("userUnrevealed", (data) => {
 				setIsRevealed(false);
 			});
-      socket.on("usersData", (data) => {
-        console.log("usersData", data);
-        setUsersData(data);
+			socket.on("usersData", (data) => {
+				console.log("usersData", data);
+				setUsersData(data);
 			});
-    }
-    
-    return () => {
-      if (socket) {
-        socket.off("userRevealed");
-        socket.off("userUnrevealed");
-        socket.off("usersData");
-      }
-    }
+		}
+
+		return () => {
+			if (socket) {
+				socket.off("userRevealed");
+				socket.off("userUnrevealed");
+				socket.off("usersData");
+			}
+		};
 	}, [socket, username]);
 
 	const handleVote = (value: string) => {
 		// setVote(value);
-    socket.emit("userVoted", { username, vote: value });
+		socket.emit("userVoted", { username, vote: value });
 	};
 
 	const handleReveal = () => {
@@ -51,13 +51,13 @@ export default function useScrumFlow(){
 	};
 
 	return {
-    vote,
-    usersData,
+		vote,
+		usersData,
 		isRevealed,
 		handleVote,
 		handleReveal,
 		handleUnreveal,
-    handleReset,
-    users
+		handleReset,
+		users,
 	};
-};
+}
