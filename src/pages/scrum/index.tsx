@@ -34,7 +34,7 @@ export default () => {
 	}, [username]);
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full bg-purple-400">
+		<div className="flex flex-col items-center justify-center h-full min-h-screen bg-purple-400">
 			<h1 className="text-4xl font-bold">Scrum Poker</h1>
 			<div className="flex items-center justify-center">
 				<button className="p-2 border rounded" onClick={handleReset}>
