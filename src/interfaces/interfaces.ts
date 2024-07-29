@@ -23,34 +23,32 @@ export interface UserUnvotedEvent {
 	username: string;
 }
 
-export interface UsersDataEvent {
-	[username: string]: {
-		username: string;
-		vote: string;
-		id: string;
+export interface GameState {
+	votes: {
+		[username: string]: {
+			username: string;
+			vote: string;
+			id: string;
+		};
 	};
+	revealed: boolean;
 }
 
 export interface ClientToServerEvents {
 	userConnected: (data: UserConnectedEvent) => void;
 	userDisconnected: (data: UserDisconnectedEvent) => void;
-	userVoted: (data: UserVotedEvent) => void;
-	userUnvoted: (data: UserUnvotedEvent) => void;
-	userRevealed: (data: UserRevealEvent) => void;
-	userUnrevealed: (data: UserRevealEvent) => void;
-	userReset: (data: UserResetEvent) => void;
-	usersData: (data: UsersDataEvent) => void;
-	update: (data: UserConnectedEvent) => void;
+	applyVote: (data: UserVotedEvent) => void;
+	startVotingSession: () => void;
+	stopVotingSession: () => void;
 }
 
 export interface ServerToClientEvents {
 	userConnected: (data: UserConnectedEvent) => void;
 	userDisconnected: (data: UserDisconnectedEvent) => void;
 	userVoted: (data: UserVotedEvent) => void;
-	userUnvoted: (data: UserUnvotedEvent) => void;
 	userRevealed: (data: UserRevealEvent) => void;
 	userUnrevealed: (data: UserRevealEvent) => void;
-	userReset: (data: UserResetEvent) => void;
-	usersData: (data: UsersDataEvent) => void;
-	update: (data: UserConnectedEvent) => void;
+	gameState: (data: GameState) => void;
+	sessionStarted: () => void;
+	sessionStoped: () => void;
 }

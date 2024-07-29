@@ -17,9 +17,9 @@ export default function Home() {
 
 	const handleLogin = () => {
 		const usernameDisplay = `${usernameTemp}  ${randomAnimal()}`;
-		socket.emit("userConnected", { username: usernameDisplay });
 		login(usernameDisplay);
 		push("/scrum");
+		socket.emit("userConnected", { username: usernameDisplay });
 	};
 
 	return (

@@ -1,104 +1,121 @@
 import { Server, Socket } from "socket.io";
-import { ClientToServerEvents, ServerToClientEvents, UsersDataEvent } from "../../interfaces/interfaces";
+import {
+	ClientToServerEvents,
+	ServerToClientEvents,
+	GameState,
+} from "../../interfaces/interfaces";
 
-const usersData: UsersDataEvent = {};
+const gameState: GameState = {
+	votes: {},
+	revealed: false,
+};
 
 export default function SocketHandler(req, res) {
-  if (res.socket.server.io) {
-    console.log("Already set up");
-    res.end();
-    return;
-  }
-  console.log("Setting up socket.io server");
-  
-  const io = new Server(res.socket.server);
-  res.socket.server.io = io;
+	if (res.socket.server.io) {
+		console.log("Already set up");
+		res.end();
+		return;
+	}
+	console.log("Setting up socket.io server");
 
-  const onConnection = (socket: Socket<ServerToClientEvents, ClientToServerEvents>) => {
-    socket.on("userConnected", (msg) => {
-      usersData[msg.username] = {
-        username: msg.username,
-        vote: null,
-        id: socket.id,
-      };
-      console.log("userConnected", msg, ", usersData", usersData);
-      io.emit("userConnected", msg);
-      io.emit("usersData", usersData);
-    });
+	const io = new Server(res.socket.server);
+	res.socket.server.io = io;
 
-    socket.on("userDisconnected", (msg) => {
-      delete usersData[msg.username];
-      delete usersData[''];
-      console.log("user disconnected", msg, ", usersData", usersData);
-      io.emit("userDisconnected", msg);
-      io.emit("usersData", usersData);
-    });
+	const emitGameState = () => {
+		const revealed = gameState.revealed;
+		const t = revealed
+			? gameState
+			: {
+					...gameState,
+					votes: Object.fromEntries(
+						Object.entries(gameState.votes).map(([username, vote]) => [
+							username,
+							{ ...vote, vote: "Nice try"},
+						])
+					),
+			  };
+		io.emit("gameState", t);
+	};
 
-    socket.on("userVoted", (msg) => {
-      usersData[msg.username] = {
-        username: msg.username,
-        vote: msg.vote,
-        id: socket.id,
-      };
-      console.log("User voted", msg, ", usersData", usersData);
-      io.emit("userVoted", msg);
-      io.emit("usersData", usersData);
-    });
+	const onConnection = (
+		socket: Socket<ClientToServerEvents, ServerToClientEvents>
+	) => {
+		socket.on("userConnected", (msg) => {
+			gameState.votes[msg.username] = {
+				username: msg.username,
+				vote: null,
+				id: socket.id,
+			};
+			console.log("userConnected", msg, ", gameState", gameState);
+			io.emit("userConnected", msg);
+			emitGameState();
+		});
 
-    socket.on("userReset", (msg) => {
-      Object.keys(usersData).forEach((username) => {
-        usersData[username].vote = null;
-      });
-      console.log("User reset", msg, ", usersData", usersData);
-      io.emit("userReset", msg);
-      io.emit("usersData", usersData);
-    });
+		socket.on("userDisconnected", (msg) => {
+			delete gameState.votes[msg.username];
+			delete gameState.votes[""];
+			console.log("user disconnected", msg, ", gameState", gameState);
+			io.emit("userDisconnected", msg);
+			emitGameState();
+		});
 
-    socket.on("userRevealed", (msg) => {
-      io.emit("userRevealed", msg);
-    });
+		socket.on("applyVote", (msg) => {
+			gameState.votes[msg.username] = {
+				username: msg.username,
+				vote: msg.vote,
+				id: socket.id,
+			};
+			console.log("User voted", msg, ", gameState", gameState);
+			io.emit("userVoted", msg);
+			emitGameState();
+		});
 
-    socket.on("userUnrevealed", (msg) => {
-      io.emit("userUnrevealed", msg);
-    });
+		socket.on("startVotingSession", () => {
+			Object.keys(gameState.votes).forEach((username) => {
+				gameState.votes[username].vote = null;
+			});
+			io.emit("sessionStarted");
+      gameState.revealed = false;
+      emitGameState();
+		});
+    
+		socket.on("stopVotingSession", () => {
+      io.emit("sessionStoped");
+      gameState.revealed = true;
+			emitGameState();
+		});
 
-    socket.on("disconnect", () => {
-      const username = Object.keys(usersData).find((username) => usersData[username].id === socket.id);
-      if (username) {
-        delete usersData[username];
-        console.log("user disconnected", username, ", usersData", usersData);
-        io.emit("userDisconnected", { username });
-        io.emit("usersData", usersData);
-      }
-      console.log("user disconnected");
-    });
+		socket.on("disconnect", () => {
+			const username = Object.keys(gameState.votes).find(
+				(username) => gameState.votes[username].id === socket.id
+			);
+			if (username) {
+				delete gameState.votes[username];
+				console.log("user disconnected", username, ", gameState", gameState);
+				io.emit("userDisconnected", { username });
+				emitGameState();
+			}
+			console.log("user disconnected");
+		});
 
-    socket.on("update", ({username}) => {
-      if (!usersData[username]) {
-        usersData[username] = {
-          username,
-          vote: null,
-          id: socket.id,
-        };
-      }
-      io.emit("usersData", usersData);
-    });
-  };
+	};
 
-  // Define actions inside
-  io.on("connection", onConnection);
+	// Define actions inside
+	io.on("connection", onConnection);
 
-  io.on("disconnect", (socket) => {
-    const username = Object.keys(usersData).find((username) => usersData[username].id === socket.id);
-    if (username) {
-      delete usersData[username];
-      console.log("user disconnected", username, ", usersData", usersData);
-      io.emit("userDisconnected", { username });
-      io.emit("usersData", usersData);
-    }
-    console.log("user disconnected");
-  });
+	io.on("disconnect", (socket) => {
+		const username = Object.keys(gameState.votes).find(
+			(username) => gameState.votes[username].id === socket.id
+		);
+		if (username) {
+			delete gameState.votes[username];
+			console.log("user disconnected", username, ", gameState", gameState);
+			io.emit("userDisconnected", { username });
+			emitGameState();
+		}
+		console.log("user disconnected");
+	});
 
-  console.log("Setting up socket");
-  res.end();
+	console.log("Setting up socket");
+	res.end();
 }
